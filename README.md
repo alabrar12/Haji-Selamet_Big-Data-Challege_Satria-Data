@@ -1,24 +1,39 @@
-# MBG Tweet Classification - Multi-Model Ensemble
+# MBG Tweet Classification - Hierarchical Ensemble
 
 ## Deskripsi
-Proyek ini merupakan solusi klasifikasi sentimen tweet menggunakan pendekatan deep learning berbasis transformer dengan teknik ensemble multi-model.
-
-Model yang digunakan:
+Proyek ini merupakan sistem klasifikasi sentimen tweet menggunakan pendekatan:
 - IndoBERT
 - XLM-RoBERTa
+- Hierarchical Ensemble (Fold → Model)
+- Softmax Temperature Weighting
+- Threshold Tuning
 
-Metode:
-- Holdout split (20%)
-- 5-Fold Cross Validation
-- Ensemble logits (fold-level + model-level)
-- Threshold tuning (confidence-based)
-
-Metric evaluasi:
-- Balanced Accuracy (BA)
+Metric utama: Balanced Accuracy
 
 ---
 
-## Struktur Proyek
+## Struktur Pipeline
+
+1. Preprocessing:
+   - Emoji normalization
+   - Slang normalization
+   - Text cleaning
+
+2. Data Split:
+   - Train → K-Fold (5 fold)
+   - Holdout (20%)
+
+3. Training:
+   - Model: IndoBERT & XLM-R
+   - Loss: CrossEntropy + class weights
+   - Early stopping
+
+4. Ensemble:
+   - Level 1: Fold ensemble (intra-model)
+   - Level 2: Model ensemble (inter-model)
+
+5. Threshold Tuning:
+   - Confidence-based fallback class
 
 ---
 
@@ -36,32 +51,9 @@ Metric evaluasi:
 
 ### 1.2 ubah path DATA_DIR, sesuai dengan dataset disimpan.
 
+
 ### 2. Jalankan program
 
-
----
-
-## Alur Program
-
-1. Load dataset (train & test)
-2. Preprocessing teks:
-   - lowercasing
-   - hapus URL
-   - normalisasi mention & hashtag
-3. Encoding label
-4. Split data:
-   - 80% untuk training (K-Fold)
-   - 20% holdout (evaluasi final)
-5. Training model:
-   - 5-Fold CV per model
-   - Early stopping
-6. Ensemble:
-   - Level 1: antar fold
-   - Level 2: antar model
-7. Threshold tuning:
-   - meningkatkan Balanced Accuracy
-8. Inference pada test set
-9. Generate file submission
 
 ---
 
@@ -69,21 +61,14 @@ Metric evaluasi:
 
 File hasil prediksi:
 
----
-
-## Kebutuhan Sistem
-
-- Python >= 3.8
-- GPU (disarankan)
-- RAM minimal 8GB
 
 ---
 
 ## Catatan
 
-- Seed digunakan: 42 (reproducible)
-- Ensemble menggunakan logits (bukan voting)
-- Model dapat diperluas dengan menambahkan konfigurasi di `MODEL_CONFIGS`
+- Model menggunakan GPU jika tersedia
+- Checkpoint model disimpan di folder `models/`
+- Dataset diletakkan di folder `data/`
 
 ---
 
